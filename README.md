@@ -1,5 +1,11 @@
-# FoodPlaces
+## FoodPlaces
 
+## Overview
+Android application which show nearby food places as pins on the Google Maps. 
+List of all found places also available for display. 
+Tapping on a map pin or clicking list item show place details.
+
+## How to compile a project
 To compile project you need upddate values(FoodPlaces\app\src\main\res\values\strings.xml):
 
 1) replace "google_maps_key" to your own created on google service for your project there
@@ -8,7 +14,10 @@ https://console.cloud.google.com/project/_/apiui/credential?hl=ru&_ga=2.17719318
 2) replace "arc_gis_key" to your own created on oficial site there
 https://developers.arcgis.com/dashboard/
 
+===================================================
+## Test task Description
 
+You will be asked to develop and implement an Android application which will show nearby food places as pins on the Google Maps. List of all found places also should be available for display. Tapping on a map pin or clicking list item should show place details.
 
 Technical requirements:
 * Gradle must be used as a build tool

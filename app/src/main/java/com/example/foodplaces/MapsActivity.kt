@@ -133,6 +133,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private fun timerStop() {
         if (mTimer == null) return
         mTimer!!.cancel()
+        mTimer = null;
     }
 
     private fun timerTick() {
