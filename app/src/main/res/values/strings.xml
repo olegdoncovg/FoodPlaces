@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">FoodPlaces</string>
+    <string name="title_activity_maps">FoodPlaces</string>
+
+    <string name="search_there">Search there</string>
+    <string name="location_not_found">No location with that name: </string>
+    <string name="world_geocode_service">https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer</string>
+    <string name="location_permission_denied">LocationDisplayManager cannot run because location permission was denied.</string>
+    <string name="geo_locate_error">Geocode failed on address.</string>
+
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
+        AIzaSyAHOsftVgI9mJ1Jrt_H1xFQEIziHfW3RGw</string>
+    <string name="arc_gis_key" templateMergeStrategy="preserve" translatable="false">
+        AAPKb45a6e214fe543e1a664cf4ab4ae3ae8sizeLGRLlfpJB6RdEB-Y6-FFRl1cGYbN_39w91-271qVw0MD5hLoWgSFTbWoXvEO</string>
+</resources>

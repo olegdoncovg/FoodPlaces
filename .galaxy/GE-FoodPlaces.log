@@ -1,0 +1,14 @@
+[2021-07-12 11:05:32] [L] galaxy property is null or empty 
+[2021-07-12 11:05:32] [L] Non-GB Project : FoodPlaces 
+[2021-07-12 11:05:32] [L] allprojects : project : app 
+[2021-07-12 11:05:32] [L] Non-GB Project : app 
+[2021-07-12 11:05:32] [D] gradle projects loaded 
+[2021-07-12 11:05:32] [I] set common default repository : samsung maven 
+[2021-07-12 11:05:32] [I]     Default Repo : buildscript repository : http://10.252.250.53:8081/lm/content/groups/public/ 
+[2021-07-12 11:05:32] [I]     Default Repo : repository : http://10.252.250.53:8081/lm/content/groups/public/ 
+[2021-07-12 11:05:32] [I] set common default strategy 
+[2021-07-12 11:05:32] [I] set common default repository : samsung maven 
+[2021-07-12 11:05:32] [I]     Default Repo : buildscript repository : http://10.252.250.53:8081/lm/content/groups/public/ 
+[2021-07-12 11:05:32] [I]     Default Repo : repository : http://10.252.250.53:8081/lm/content/groups/public/ 
+[2021-07-12 11:05:32] [I] set common default strategy 
+[2021-07-12 11:05:33] [D] gradle projects evaluated 
