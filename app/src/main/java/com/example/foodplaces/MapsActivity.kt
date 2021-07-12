@@ -55,6 +55,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private var mTimer: Timer? = null
     private var mLastPositionTime: Long = 0
     private var mIsCameraMoving: Boolean = false
+    private var mIsShowingPermissionDialog: Boolean = false
     private var mLastPosition: LatLng? = null
     private val mRealmManager = RealmManager(object : OnResultListener {
         override fun onWriteSuccessfully() {
@@ -137,7 +138,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     }
 
     private fun timerTick() {
-        if (!mIsCameraMoving && mSearchState == SearchState.WAITING_TO_RUN && isLocationDataValid &&
+        if (!mIsShowingPermissionDialog && !mIsCameraMoving && mSearchState == SearchState.WAITING_TO_RUN && isLocationDataValid &&
                 mLastPositionTime + TIME_NO_CAMERA_ACTION_FOR_SEARCH < System.currentTimeMillis()) {
             mSearchState = SearchState.CHECK_DATABASE
             mRealmManager.readData()
@@ -159,7 +160,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
             mMap!!.isMyLocationEnabled = false
             mMap!!.uiSettings.isMyLocationButtonEnabled = false
         }
-        mMap!!.setOnCameraMoveStartedListener { i: Int -> { mIsCameraMoving = true } }
+        mMap!!.setOnCameraMoveStartedListener { i: Int -> run { mIsCameraMoving = true } }
         mMap!!.setOnMapClickListener { latLng: LatLng? -> googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM)) }
         mMap!!.setOnCameraIdleListener { if (mMap != null) onLocationChanged(mMap!!.cameraPosition.target, mMap!!.cameraPosition.zoom) }
     }
@@ -213,6 +214,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                         && ContextCompat.checkSelfPermission(this, reqPermissions[1])
                         == PackageManager.PERMISSION_GRANTED)) {
             val requestCode = 2
+            mIsShowingPermissionDialog = true
             ActivityCompat.requestPermissions(this, reqPermissions, requestCode)
         }
         // create a LocatorTask from an online service
@@ -291,6 +293,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        mIsShowingPermissionDialog = false
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             initLocation()
         } else {
