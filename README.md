@@ -1,4 +1,6 @@
 ## FoodPlaces
+There is release APK file: 
+https://drive.google.com/file/d/1Uip7JQjzQEhGgdLDhrTC1w_JHrl4ludJ/view?usp=sharing
 
 ## Overview
 Android application which show nearby food places as pins on the Google Maps. 
@@ -14,9 +16,7 @@ https://console.cloud.google.com/project/_/apiui/credential?hl=ru&_ga=2.17719318
 2) replace "arc_gis_key" to your own created on oficial site there
 https://developers.arcgis.com/dashboard/
 
-===================================================
 ## Test task Description
-
 You will be asked to develop and implement an Android application which will show nearby food places as pins on the Google Maps. List of all found places also should be available for display. Tapping on a map pin or clicking list item should show place details.
 
 Technical requirements:
