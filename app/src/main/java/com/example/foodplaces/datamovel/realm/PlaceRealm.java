@@ -1,7 +1,8 @@
-package com.example.foodplaces.realm;
+package com.example.foodplaces.datamovel.realm;
 
 import androidx.annotation.NonNull;
 
+import com.example.foodplaces.viewmodel.IPlace;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Map;
@@ -10,7 +11,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class PlaceRealm extends RealmObject {
+public class PlaceRealm extends RealmObject implements IPlace {
     @PrimaryKey
     private String id;
     @Required
@@ -24,7 +25,7 @@ public class PlaceRealm extends RealmObject {
     public PlaceRealm(LatLng latLng, Map<String, Object> attributes) {
         this.latitude = latLng.latitude;
         this.longitude = latLng.longitude;
-        this.id = latitude + "_" + longitude;
+        this.id = getId(latitude, longitude);
         fullInfo = attributes.get("LongLabel").toString();
         shortInfo = attributes.get("ShortLabel").toString();
     }
@@ -32,13 +33,17 @@ public class PlaceRealm extends RealmObject {
     public PlaceRealm() {
     }
 
-    public PlaceRealm(PlaceRealm placeRealm) {
-        status = PlaceRealmStatus.Open.name();
-        id = placeRealm.id;
-        latitude = placeRealm.latitude;
-        longitude = placeRealm.longitude;
-        fullInfo = placeRealm.fullInfo;
-        shortInfo = placeRealm.shortInfo;
+    public PlaceRealm(IPlace place) {
+        this.latitude = place.getLatLng().latitude;
+        this.longitude = place.getLatLng().longitude;
+        this.id = getId(latitude, longitude);
+        fullInfo = place.getFullInfo();
+        shortInfo = place.getShortInfo();
+    }
+
+    @NonNull
+    private static String getId(double latitude, double longitude) {
+        return latitude + "_" + longitude;
     }
 
     public String getStatus() {
@@ -82,11 +87,11 @@ public class PlaceRealm extends RealmObject {
     public String toString() {
         return "PlaceRealm{" +
                 "id=" + id +
-                ", status='" + status + '\'' +
+                ", status='" + status +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-//                ", fullInfo='" + fullInfo + '\'' +
-                ", shortInfo='" + shortInfo + '\'' +
+//                ", fullInfo='" + fullInfo +
+                ", shortInfo='" + shortInfo +
                 '}';
     }
 }

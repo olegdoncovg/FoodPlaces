@@ -1,4 +1,4 @@
-package com.example.foodplaces.realm;
+package com.example.foodplaces.datamovel.realm;
 
 public enum PlaceRealmStatus {
     Open("Open"),

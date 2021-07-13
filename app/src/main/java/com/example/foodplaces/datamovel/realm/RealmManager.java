@@ -1,9 +1,12 @@
-package com.example.foodplaces.realm;
+package com.example.foodplaces.datamovel.realm;
 
 import android.app.Activity;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.example.foodplaces.BuildConfig;
+import com.example.foodplaces.viewmodel.IPlace;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,12 +41,25 @@ public class RealmManager {
         uiThreadRealm = Realm.getInstance(config);
     }
 
-    public void writeData(List<PlaceRealm> newData) {
+    public void writeData(@NonNull List<IPlace> data) {
         Log.i(TAG, "writeData");
+        List<PlaceRealm> newData = convertToPlaceRealm(data);
+
         writeData.clear();
         newData.forEach(placeRealm -> writeData.put(placeRealm.getId(), placeRealm));
         FutureTask<String> Task = new FutureTask<>(new BackgroundWrite(), "test");
         executorService.execute(Task);
+    }
+
+    @NonNull
+    private List<PlaceRealm> convertToPlaceRealm(@NonNull List<IPlace> data) {
+        List<PlaceRealm> newData = new ArrayList<>();
+        data.forEach(iPlace -> newData.add(convertToPlaceRealm(iPlace)));
+        return newData;
+    }
+
+    private PlaceRealm convertToPlaceRealm(IPlace place) {
+        return place instanceof PlaceRealm ? (PlaceRealm) place : new PlaceRealm(place);
     }
 
     public void readData() {

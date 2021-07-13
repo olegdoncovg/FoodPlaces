@@ -1,22 +1,18 @@
-package com.example.foodplaces
+package com.example.foodplaces.viewmodel
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.foodplaces.realm.PlaceRealm
+import com.example.foodplaces.R
 import java.util.*
 
 class CustomAdapter(private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
-    private val localDataSet: MutableList<PlaceRealm>
+    private var localDataSet: MutableList<IPlace> = ArrayList()
 
-    init {
-        this.localDataSet = ArrayList()
-    }
-
-    fun setData(dataSet: List<PlaceRealm>) {
+    fun setData(dataSet: List<IPlace>) {
         localDataSet.clear()
         localDataSet.addAll(dataSet)
         notifyDataSetChanged()
@@ -29,7 +25,7 @@ class CustomAdapter(private val onItemClickListener: OnItemClickListener) : Recy
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.textView.text = localDataSet[position].fullInfo
+        viewHolder.textView.text = localDataSet[position].getFullInfo()
         viewHolder.textView.setOnClickListener { v: View? -> onItemClickListener.onItemClick(localDataSet[position]) }
     }
 
@@ -38,7 +34,7 @@ class CustomAdapter(private val onItemClickListener: OnItemClickListener) : Recy
     }
 
     interface OnItemClickListener {
-        fun onItemClick(item: PlaceRealm?)
+        fun onItemClick(item: IPlace)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

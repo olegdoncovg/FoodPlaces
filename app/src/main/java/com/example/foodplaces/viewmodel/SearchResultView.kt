@@ -1,27 +1,27 @@
-package com.example.foodplaces
+package com.example.foodplaces.viewmodel
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.foodplaces.realm.PlaceRealm
 
-class SearchResult(private val recyclerView: RecyclerView, onItemClickListener: CustomAdapter.OnItemClickListener) {
+class SearchResultView(private val recyclerView: RecyclerView, onItemClickListener: CustomAdapter.OnItemClickListener) {
 
     private val customAdapter: CustomAdapter = CustomAdapter(onItemClickListener)
 
     init {
+        recyclerView.adapter = customAdapter
         hide()
     }
 
-    fun setData(dataSet: List<PlaceRealm>) {
+    fun showData(dataSet: List<IPlace>) {
         customAdapter.setData(dataSet)
         show()
     }
 
-    fun show() {
+    private fun show() {
         recyclerView.visibility = View.VISIBLE
     }
 
-    fun hide() {
+    private fun hide() {
         recyclerView.visibility = View.GONE
     }
 }
