@@ -9,13 +9,12 @@ import com.example.foodplaces.datamovel.realm.RealmManager
 import com.example.foodplaces.viewmodel.IPlace
 import com.google.android.gms.maps.model.LatLng
 
+private val TAG = DataModel::class.java.simpleName
+
 class DataModel : IDataModel {
-    companion object {
-        private val TAG = DataModel::class.java.simpleName
-    }
 
     private var searchManager: ISearch = ArcGISSearchManager()
-    private var searchResult: IResult? = null
+    private var searchResult: IResult = NoResult
 
     private val mRealmManager = RealmManager(object : RealmManager.OnResultListener {
         override fun onWriteSuccessfully() {
@@ -24,10 +23,8 @@ class DataModel : IDataModel {
 
         override fun onReadResult(data: List<PlaceRealm>) {
             if (BuildConfig.DEBUG) Log.i(TAG, "RealmManager-onReadResult: data=" + data.size)
-            if (searchResult != null) {
-                searchResult!!.onSuccess(data, DataSource.LOCAL)
-                searchResult = null;
-            }
+            searchResult.onSuccess(data, DataSource.LOCAL)
+            searchResult = NoResult
         }
     })
 

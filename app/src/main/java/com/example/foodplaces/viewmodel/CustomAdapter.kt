@@ -10,7 +10,7 @@ import java.util.*
 
 class CustomAdapter(private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
-    private var localDataSet: MutableList<IPlace> = ArrayList()
+    private val localDataSet: MutableList<IPlace> = ArrayList()
 
     fun setData(dataSet: List<IPlace>) {
         localDataSet.clear()

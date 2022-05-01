@@ -19,25 +19,24 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import java.util.*
 
+private val TAG = MapManager::class.java.simpleName
+private val NO_LOCATION = LatLng(.0, .0)
+private const val CAMERA_EDGE_PADDING_PX = 100
+private const val DEFAULT_ZOOM = 14f
+private const val DEFAULT_ZOOM_FOCUS = 17f
+private const val TIME_NO_CAMERA_ACTION_FOR_SEARCH = 1000
+private const val TIMER_FPS = 40
+
 class MapManager(mapInteraction: IMapInteraction) : OnMapReadyCallback {
-    companion object {
-        private val TAG = MapManager::class.java.simpleName
-        private val NO_LOCATION = LatLng(.0, .0)
-        private const val CAMERA_EDGE_PADDING_PX = 100
-        private const val DEFAULT_ZOOM = 14f
-        private const val DEFAULT_ZOOM_FOCUS = 17f
-        private const val TIME_NO_CAMERA_ACTION_FOR_SEARCH = 1000
-        private const val TIMER_FPS = 40
-    }
 
     private var mInteraction: IMapInteraction = mapInteraction
 
-    private var mMap: GoogleMap? = null
-    private var fusedLocationClient: FusedLocationProviderClient? = null
+    private lateinit var mMap: GoogleMap
+    private val fusedLocationClient: FusedLocationProviderClient
 
     private var mLastPositionTime: Long = 0
     private var mLastPosition: LatLng = NO_LOCATION
-    private var mTimer: Timer? = null
+    private val mTimer: Timer = Timer()
 
     private var mSearchState = SearchState.NOT_IDEALIZED
     private enum class SearchState {
@@ -52,7 +51,7 @@ class MapManager(mapInteraction: IMapInteraction) : OnMapReadyCallback {
     }
 
     fun onMapMarkersUpdate(places: List<IPlace>, focusOnPlaces: Boolean) {
-        mMap!!.clear()
+        mMap.clear()
         val latLngBuilder = LatLngBounds.Builder()
         for (place in places) {
             addMarker(place)
@@ -60,7 +59,7 @@ class MapManager(mapInteraction: IMapInteraction) : OnMapReadyCallback {
         }
 
         if (focusOnPlaces)
-            mMap!!.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBuilder.build(), CAMERA_EDGE_PADDING_PX))
+            mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBuilder.build(), CAMERA_EDGE_PADDING_PX))
         searchFinished()
     }
 
@@ -71,29 +70,29 @@ class MapManager(mapInteraction: IMapInteraction) : OnMapReadyCallback {
                         Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             initLocation(true)
         } else {
-            mMap!!.isMyLocationEnabled = false
-            mMap!!.uiSettings.isMyLocationButtonEnabled = false
+            mMap.isMyLocationEnabled = false
+            mMap.uiSettings.isMyLocationButtonEnabled = false
         }
-        mMap!!.setOnMapClickListener { latLng: LatLng ->
+        mMap.setOnMapClickListener { latLng: LatLng ->
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM))
         }
-        mMap!!.setOnCameraMoveListener {
-            if (mMap != null) onLocationChanged(mMap!!.cameraPosition.target)
+        mMap.setOnCameraMoveListener {
+            if (::mMap.isInitialized) onLocationChanged(mMap.cameraPosition.target)
         }
     }
 
     fun initLocation(locationPermitted: Boolean) {
-        if (mMap == null) return
+        if (!::mMap.isInitialized) return
         if (locationPermitted) moveToDeviceLocation()
         waitForMapCameraStop()
     }
 
     val isValid: Boolean
-        get() = mMap != null && mLastPosition != NO_LOCATION
+        get() = ::mMap.isInitialized && mLastPosition != NO_LOCATION
 
     fun hasVisiblePlaces(data: List<IPlace>): Boolean {
         if (!isValid) return false
-        val latLngBounds: LatLngBounds = mMap!!.projection.visibleRegion.latLngBounds
+        val latLngBounds: LatLngBounds = mMap.projection.visibleRegion.latLngBounds
         for (placeRealm in data) {
             if (latLngBounds.contains(placeRealm.getLatLng()))
                 return true
@@ -102,7 +101,7 @@ class MapManager(mapInteraction: IMapInteraction) : OnMapReadyCallback {
     }
 
     fun animateToPlace(item: IPlace) {
-        mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(item.getLatLng(), DEFAULT_ZOOM_FOCUS))
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(item.getLatLng(), DEFAULT_ZOOM_FOCUS))
     }
 
     fun getLastPosition(): LatLng {
@@ -125,15 +124,15 @@ class MapManager(mapInteraction: IMapInteraction) : OnMapReadyCallback {
         if (ContextCompat.checkSelfPermission(mInteraction.getActivity(),
                         Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             //Adjust map parameters
-            mMap!!.isMyLocationEnabled = true
-            mMap!!.uiSettings.isMyLocationButtonEnabled = true
+            mMap.isMyLocationEnabled = true
+            mMap.uiSettings.isMyLocationButtonEnabled = true
 
 
             //Start go to my location process
-            fusedLocationClient!!.lastLocation.addOnSuccessListener(
+            fusedLocationClient.lastLocation.addOnSuccessListener(
                     mInteraction.getActivity()) { location: Location? ->
                 if (location != null) {
-                    mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
                             LatLng(location.latitude, location.longitude), DEFAULT_ZOOM))
                 }
             }
@@ -143,7 +142,7 @@ class MapManager(mapInteraction: IMapInteraction) : OnMapReadyCallback {
     }
 
     private fun addMarker(resultItem: IPlace) {
-        mMap!!.addMarker(MarkerOptions().position(resultItem.getLatLng()).title(resultItem.getShortInfo()))
+        mMap.addMarker(MarkerOptions().position(resultItem.getLatLng()).title(resultItem.getShortInfo()))
     }
 
     //// Timer ////
@@ -161,8 +160,7 @@ class MapManager(mapInteraction: IMapInteraction) : OnMapReadyCallback {
 
     private fun timerStart() {
         if (mSearchState == SearchState.COMPLETE) return
-        if (mTimer == null) mTimer = Timer()
-        mTimer!!.scheduleAtFixedRate(object : TimerTask() {
+        mTimer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 timerTick()
             }
@@ -170,9 +168,7 @@ class MapManager(mapInteraction: IMapInteraction) : OnMapReadyCallback {
     }
 
     private fun timerStop() {
-        if (mTimer == null) return
-        mTimer!!.cancel()
-        mTimer = null
+        mTimer.cancel()
     }
 
     private fun timerTick() {

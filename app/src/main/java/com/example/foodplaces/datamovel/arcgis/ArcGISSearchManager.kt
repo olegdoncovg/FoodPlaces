@@ -17,14 +17,13 @@ import com.google.android.gms.maps.model.LatLng
 import java.util.*
 import java.util.concurrent.ExecutionException
 
-class ArcGISSearchManager : ISearch {
-    companion object {
-        private val TAG = ArcGISSearchManager::class.java.simpleName
-        private const val MAX_RESULTS = 20
-        private const val DEFAULT_POI_ADDRESS = "food"
-    }
+private val TAG = ArcGISSearchManager::class.java.simpleName
+private const val MAX_RESULTS = 20
+private const val DEFAULT_POI_ADDRESS = "food"
 
-    private var mLocatorTask: LocatorTask? = null
+class ArcGISSearchManager : ISearch {
+
+    private lateinit var mLocatorTask: LocatorTask
 
     override fun init(context: Context) {
         // authentication with an API key or named user is required to access basemaps and other location services
@@ -47,17 +46,17 @@ class ArcGISSearchManager : ISearch {
         poiGeocodeParameters.searchArea = point
         poiGeocodeParameters.maxResults = MAX_RESULTS
         // Execute async task to find the address
-        mLocatorTask!!.addDoneLoadingListener {
-            Log.i(TAG, "runSearch: completed status=" + mLocatorTask!!.loadStatus)
-            if (mLocatorTask!!.loadStatus == LoadStatus.LOADED) {
+        mLocatorTask.addDoneLoadingListener {
+            Log.i(TAG, "runSearch: completed status=" + mLocatorTask.loadStatus)
+            if (mLocatorTask.loadStatus == LoadStatus.LOADED) {
                 // Call geocodeAsync passing in an address
-                val geocodeResultListenableFuture = mLocatorTask!!
+                val geocodeResultListenableFuture = mLocatorTask
                         .geocodeAsync(address, poiGeocodeParameters)
                 geocodeResultListenableFuture.addDoneListener {
                     try {
                         // Get the results of the async operation
                         val geocodeResults = geocodeResultListenableFuture.get()
-                        if (!geocodeResults.isEmpty()) {
+                        if (geocodeResults.isNotEmpty()) {
                             result.onSuccess(formPlacesList(geocodeResults), DataSource.SERVER)
                         } else {
                             result.onFailed("runSearch: geocodeResults.isEmpty")
@@ -70,10 +69,10 @@ class ArcGISSearchManager : ISearch {
                 }
             } else {
                 Log.w(TAG, "runSearch: Trying to reload locator task")
-                mLocatorTask!!.retryLoadAsync()
+                mLocatorTask.retryLoadAsync()
             }
         }
-        mLocatorTask!!.loadAsync()
+        mLocatorTask.loadAsync()
     }
 
     private fun formPlacesList(geocodeResults: List<GeocodeResult>): List<IPlace> {
